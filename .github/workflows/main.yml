@@ -1,0 +1,26 @@
+name: Deploy to MongoDB Atlas Data API
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Deploy to Atlas Data API
+        run: |
+          curl --request PATCH \
+            --url https://realm.mongodb.com/api/admin/v3.0/groups/${{ secrets.ATLAS_GROUP_ID }}/clusters/${{ secrets.ATLAS_CLUSTER_NAME }}/dataSources/${{ secrets.ATLAS_DATA_SOURCE_NAME }} \
+            --header 'Content-Type: application/json' \
+            --header 'Accept: application/json' \
+            --header "Authorization: Bearer ${{ secrets.ATLAS_API_KEY }}" \
+            --data '{"status":"IDLE"}'
